@@ -14,6 +14,7 @@ import butterknife.ButterKnife
 import butterknife.Unbinder
 import okhttp3.Credentials
 import org.jtom.ader_mobile.R
+import org.jtom.ader_mobile.model.OfferDto
 import org.jtom.ader_mobile.request.login.LoginResponse
 import org.jtom.ader_mobile.service.api.ApiClient
 import org.jtom.ader_mobile.util.Constants
@@ -21,6 +22,7 @@ import org.jtom.ader_mobile.util.SessionManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.HttpURLConnection
 
 class LoginFragment : Fragment() {
 
@@ -51,11 +53,22 @@ class LoginFragment : Fragment() {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     val loginResponse = response.body()
 
-                    if (loginResponse != null) {
+                    if (loginResponse != null && response.code() == HttpURLConnection.HTTP_OK) {
                         sessionManager.saveAuthToken(loginResponse.accessToken)
                     } else {
                         Log.e(TAG, response.errorBody().toString())
                     }
+                }
+            })
+
+        apiClient.getApiService().getOffers()
+            .enqueue(object: Callback<List<OfferDto>> {
+                override fun onFailure(call: Call<List<OfferDto>>, t: Throwable) {
+                    Log.e(TAG, t.message, t)
+                }
+
+                override fun onResponse(call: Call<List<OfferDto>>, response: Response<List<OfferDto>>) {
+                    println(response.body())
                 }
             })
     }
