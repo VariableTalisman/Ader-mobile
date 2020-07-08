@@ -59,6 +59,8 @@ class LoginViewModel(private val context: Context) : ViewModel(),
                     if (loginResponse.isSuccessful && loginResponse.code() == HttpURLConnection.HTTP_OK) {
                         sessionManager.saveAuthToken(loginResponse.body()!!.accessToken)
                         model.postValue(LoginModel.Success)
+                    } else {
+                        model.postValue(LoginModel.Error(loginResponse.code().toString().plus(": ").plus(loginResponse.message())))
                     }
                 }
             })
