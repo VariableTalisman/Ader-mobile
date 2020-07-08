@@ -1,23 +1,30 @@
 package org.jtom.ader_mobile.service.api
 
+import android.content.Context
+import okhttp3.Cache
+import okhttp3.OkHttpClient
 import org.jtom.ader_mobile.common.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 
-class ApiClient {
-
-    private lateinit var apiService: ApiService
+class ApiClient (private val context: Context) {
 
     fun getApiService(): ApiService {
-        // Initialize ApiService if not initialized yet
-        if (!::apiService.isInitialized) {
-            val retrofit = Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+        val httpCacheDirectory = File(context.cacheDir, "offlineCache")
 
-            apiService = retrofit.create(ApiService::class.java)
-        }
-        return apiService
+        //10 MB
+        val cache = Cache(httpCacheDirectory, 10 * 1024 * 1024)
+        val client = OkHttpClient().newBuilder()
+            .cache(cache)
+            .build()
+
+        val mRetrofit = Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        return mRetrofit.create(ApiService::class.java)
     }
 }

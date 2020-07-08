@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep all of your data classes that are stored in CoroutineCache
+-keep class org.jtom.ader_mobile.datamodel.OfferDto { *; }
+
+# ProGuard instructions that are required for CoroutineCache to work properly
+-keepclassmembers enum com.epam.coroutinecache.core.Source {
+    public *;
+}

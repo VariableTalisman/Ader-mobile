@@ -15,6 +15,7 @@ import org.jtom.ader_mobile.ui.offers.adapter.OfferRecyclerViewAdapter
 import org.jtom.ader_mobile.ui.offers.model.OffersModel
 import org.jtom.ader_mobile.ui.offers.model.OffersViewModelAction
 import org.jtom.ader_mobile.ui.offers.viewmodel.OffersViewModel
+import org.jtom.ader_mobile.ui.offers.viewmodel.OffersViewModelFactory
 
 class OffersFragment : Fragment() {
 
@@ -30,7 +31,7 @@ class OffersFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(OffersViewModel::class.java)
+        viewModel = ViewModelProvider(this, OffersViewModelFactory(requireActivity().applicationContext)).get(OffersViewModel::class.java)
         viewModel.model.observe(viewLifecycleOwner, Observer {
             dispatchUIUpdate(it)
         })

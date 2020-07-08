@@ -1,6 +1,8 @@
 package org.jtom.ader_mobile.ui.offers.adapter
 
+import android.os.Build
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import org.jtom.ader_mobile.R
 import org.jtom.ader_mobile.common.inflate
@@ -23,7 +25,7 @@ class OfferRecyclerViewAdapter(offers: List<OfferDto> = emptyList(),
         return OfferItemViewHolder(parent.inflate(R.layout.offer_item))
     }
 
-    @ExperimentalStdlibApi
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: OfferItemViewHolder, position: Int) {
         holder.bind(items[position], listener)
     }

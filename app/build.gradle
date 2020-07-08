@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "org.jtom.ader_mobile"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -19,7 +19,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -38,14 +39,13 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
-    // Picasso
-    implementation("com.squareup.picasso:picasso:2.71828")
-
     // Google Material
     implementation "com.google.android.material:material:1.1.0"
 
     // Butter Knife
     implementation 'com.jakewharton:butterknife:10.2.1'
+    implementation 'androidx.room:room-runtime:2.2.5'
+    kapt 'androidx.room:room-compiler:2.2.5'
     kapt 'com.jakewharton:butterknife-compiler:10.2.1'
 
     // Kotlin
@@ -62,11 +62,13 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.0"
     implementation "androidx.navigation:navigation-ui-ktx:2.3.0"
     implementation "androidx.fragment:fragment-ktx:1.2.5"
-    implementation("androidx.recyclerview:recyclerview:1.1.0")
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
 
     // Network
+    implementation ('com.squareup.retrofit2:retrofit:2.8.1') {
+        exclude module: 'okhttp'
+    }
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
-    implementation 'com.squareup.retrofit2:retrofit:2.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
     // Testing

@@ -1,23 +1,24 @@
 package org.jtom.ader_mobile.ui.login.viewmodel
 
 import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.Credentials
-import org.jtom.ader_mobile.ui.login.model.LoginModel
-import org.jtom.ader_mobile.ui.login.model.LoginViewModelAction
+import okhttp3.Response
 import org.jtom.ader_mobile.common.AderViewModel
 import org.jtom.ader_mobile.common.Constants
 import org.jtom.ader_mobile.common.GrantType
+import org.jtom.ader_mobile.request.login.LoginResponse
 import org.jtom.ader_mobile.service.api.ApiClient
+import org.jtom.ader_mobile.ui.login.model.LoginModel
+import org.jtom.ader_mobile.ui.login.model.LoginViewModelAction
 import org.jtom.ader_mobile.util.SessionManager
 import java.net.HttpURLConnection
 
@@ -38,24 +39,28 @@ class LoginViewModel(private val context: Context) : ViewModel(),
 
     private fun performLogin(email: String, password: String) = viewModelScope.launch {
         val sessionManager = SessionManager.getInstance(context)
-        val apiClient = ApiClient()
+        val apiClient = ApiClient(context)
 
-        val loginResponse = apiClient.getApiService().login(
+        apiClient.getApiService().login(
             Credentials.basic(Constants.CLIENT_ID, Constants.CLIENT_SECRET),
             email,
             password,
-            GrantType.PASSWORD.value)
+            GrantType.PASSWORD.value).clone()
+            .enqueue(object : retrofit2.Callback<LoginResponse> {
 
-        withContext(Dispatchers.Main) {
-            if (loginResponse.isSuccessful && loginResponse.code() == HttpURLConnection.HTTP_OK) {
-                sessionManager.saveAuthToken(loginResponse.body()!!.accessToken)
-                model.postValue(LoginModel.Success)
-            } else {
-                val errorMessage = loginResponse.code()
-                    .toString() + ": " + loginResponse.message() + ". " + loginResponse.body()
-                    .toString()
-                model.postValue(LoginModel.Error(errorMessage))
-            }
-        }
+                override fun onFailure(loginResponse: retrofit2.Call<LoginResponse>, t: Throwable) {
+                    model.postValue(LoginModel.Error(t.message!!))
+                }
+
+                override fun onResponse(
+                    call: retrofit2.Call<LoginResponse>,
+                    loginResponse: retrofit2.Response<LoginResponse>
+                ) {
+                    if (loginResponse.isSuccessful && loginResponse.code() == HttpURLConnection.HTTP_OK) {
+                        sessionManager.saveAuthToken(loginResponse.body()!!.accessToken)
+                        model.postValue(LoginModel.Success)
+                    }
+                }
+            })
     }
 }
