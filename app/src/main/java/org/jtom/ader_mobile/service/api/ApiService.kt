@@ -15,12 +15,12 @@ interface ApiService {
     @POST(Constants.LOGIN_URL)
     @FormUrlEncoded
     suspend fun login(
-        @Header("Authorization") bearerToken: String,
+        @Header("Authorization") basic: String,
         @Field("username") email: String,
         @Field("password") password: String,
         @Field("grant_type") grantType: String
     ): Response<LoginResponse>
 
     @GET(Constants.OFFER_URL)
-    fun getOffers(): Call<List<OfferDto>>
+    suspend fun getOffers(): Response<List<OfferDto>>
 }

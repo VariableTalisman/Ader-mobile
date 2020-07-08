@@ -11,4 +11,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="home_subtitle">A platform for facilitating advertising activities and creation management of influencer marketing campaigns</string>
+    <string name="offers">Offers</string>
+    <string name="auther_by">By:\u0020</string>
 </resources>

@@ -26,7 +26,7 @@ class HomeFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
+        val root = inflater.inflate(R.layout.home_fragment, container, false)
         unbinder = ButterKnife.bind(this, root)
 
         homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)

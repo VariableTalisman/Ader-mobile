@@ -14,7 +14,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.login_fragment.*
 import org.jtom.ader_mobile.R
 import org.jtom.ader_mobile.common.dismissKeyboard
 import org.jtom.ader_mobile.ui.login.model.LoginModel
@@ -51,7 +51,7 @@ class LoginFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_login, container, false)
+        val root = inflater.inflate(R.layout.login_fragment, container, false)
         unbinder = ButterKnife.bind(this, root)
         return root
     }
