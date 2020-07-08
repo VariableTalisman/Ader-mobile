@@ -1,6 +1,6 @@
 package org.jtom.ader_mobile.service.api
 
-import org.jtom.ader_mobile.util.Constants
+import org.jtom.ader_mobile.common.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

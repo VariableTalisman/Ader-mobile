@@ -1,4 +1,4 @@
-package org.jtom.ader_mobile.util
+package org.jtom.ader_mobile.common
 
 object Constants {
 

@@ -1,4 +1,4 @@
-package org.jtom.ader_mobile.model
+package org.jtom.ader_mobile.datamodel
 
 data class BidDto (
     var id: Long,

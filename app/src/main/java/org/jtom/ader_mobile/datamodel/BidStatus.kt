@@ -1,4 +1,4 @@
-package org.jtom.ader_mobile.model
+package org.jtom.ader_mobile.datamodel
 
 enum class BidStatus(val bidStatus: String) {
     NEW("NEW"),

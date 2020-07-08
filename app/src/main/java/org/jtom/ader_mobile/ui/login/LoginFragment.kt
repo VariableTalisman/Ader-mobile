@@ -1,76 +1,49 @@
 package org.jtom.ader_mobile.ui.login
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import okhttp3.Credentials
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.android.synthetic.main.fragment_login.*
 import org.jtom.ader_mobile.R
-import org.jtom.ader_mobile.model.OfferDto
-import org.jtom.ader_mobile.request.login.LoginResponse
-import org.jtom.ader_mobile.service.api.ApiClient
-import org.jtom.ader_mobile.util.Constants
-import org.jtom.ader_mobile.util.SessionManager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.net.HttpURLConnection
+import org.jtom.ader_mobile.common.dismissKeyboard
+import org.jtom.ader_mobile.ui.login.model.LoginModel
+import org.jtom.ader_mobile.ui.login.model.LoginViewModelAction
+import org.jtom.ader_mobile.ui.login.viewmodel.LoginViewModel
+import org.jtom.ader_mobile.ui.login.viewmodel.LoginViewModelFactory
 
 class LoginFragment : Fragment() {
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var unbinder: Unbinder
-    private lateinit var sessionManager: SessionManager
-    private lateinit var apiClient: ApiClient
-    private val TAG: String = "LoginFragment"
 
     @BindView(R.id.text_login) lateinit var textView: TextView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-        apiClient = ApiClient()
-        sessionManager = SessionManager(this.requireContext())
+        loginViewModel = ViewModelProvider(this, LoginViewModelFactory(requireContext())).get(LoginViewModel::class.java)
+        loginViewModel.text.observe(viewLifecycleOwner, Observer {
+            textView.text = it
+        })
 
-        apiClient.getApiService().login(
-            Credentials.basic(Constants.CLIENT_ID, Constants.CLIENT_SECRET),
-            "dev@dev.com",
-            "dev",
-            "password")
-            .enqueue(object : Callback<LoginResponse> {
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    Log.e(TAG, t.message, t)
-                }
+        loginViewModel.model.observe(viewLifecycleOwner, Observer {
+            dispatchUIUpdate(it)
+        })
 
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    val loginResponse = response.body()
-
-                    if (loginResponse != null && response.code() == HttpURLConnection.HTTP_OK) {
-                        sessionManager.saveAuthToken(loginResponse.accessToken)
-                    } else {
-                        Log.e(TAG, response.errorBody().toString())
-                    }
-                }
-            })
-
-        apiClient.getApiService().getOffers()
-            .enqueue(object: Callback<List<OfferDto>> {
-                override fun onFailure(call: Call<List<OfferDto>>, t: Throwable) {
-                    Log.e(TAG, t.message, t)
-                }
-
-                override fun onResponse(call: Call<List<OfferDto>>, response: Response<List<OfferDto>>) {
-                    println(response.body())
-                }
-            })
+        loginButton.setOnClickListener {
+            onLoginButtonPressed()
+        }
     }
 
     override fun onCreateView(
@@ -80,16 +53,39 @@ class LoginFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_login, container, false)
         unbinder = ButterKnife.bind(this, root)
-
-        loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
-        loginViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
         return root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         unbinder.unbind()
+    }
+
+    private fun onLoginButtonPressed() {
+        view?.dismissKeyboard()
+        loginViewModel.send(LoginViewModelAction.Login(editTextEmail.text.toString(), editTextPassword.text.toString()))
+    }
+
+    private fun dispatchUIUpdate(model: LoginModel) {
+        progressBar.visibility = View.GONE
+
+        when (model) {
+            is LoginModel.Loading -> {
+                progressBar.visibility = View.VISIBLE
+            }
+
+            is LoginModel.Success -> {
+                Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.login_fragment_to_home_fragment)
+            }
+
+            is LoginModel.Error -> {
+                MaterialAlertDialogBuilder(requireActivity())
+                    .setTitle("Error")
+                    .setMessage(model.message)
+                    .setNegativeButton("Ok", null)
+                    .show()
+            }
+        }
     }
 }
