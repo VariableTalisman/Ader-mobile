@@ -21,5 +21,5 @@ interface ApiService {
     ): Call<LoginResponse>
 
     @GET(Constants.OFFER_URL)
-    fun getOffers(): Call<List<OfferDto>>
+    fun getOffers(@Header("Authorization") accessToken: String): Call<List<OfferDto>>
 }

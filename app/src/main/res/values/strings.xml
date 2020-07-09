@@ -14,4 +14,9 @@
     <string name="home_subtitle">A platform for facilitating advertising activities and creation management of influencer marketing campaigns</string>
     <string name="offers">Offers</string>
     <string name="auther_by">By:\u0020</string>
+    <string name="create_offer">Create offer</string>
+    <string name="logout">Logout</string>
+    <string name="new_offer">New offer</string>
+    <string name="name">Name</string>
+    <string name="offer_expiration">Offer expiration</string>
 </resources>

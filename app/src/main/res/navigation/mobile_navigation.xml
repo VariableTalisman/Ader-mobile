@@ -26,5 +26,16 @@
         android:id="@+id/nav_offers"
         android:name="org.jtom.ader_mobile.ui.offers.OffersFragment"
         android:label="@string/offers"
-        tools:layout="@layout/offers_fragment" />
+        tools:layout="@layout/offers_fragment" >
+
+        <action
+            android:id="@+id/offers_fragment_to_create_offer_fragment"
+            app:destination="@id/nav_create_offer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_create_offer"
+        android:name="org.jtom.ader_mobile.ui.createoffer.CreateOfferFragment"
+        android:label="@string/create_offer"
+        tools:layout="@layout/create_offer_fragment" />
 </navigation>

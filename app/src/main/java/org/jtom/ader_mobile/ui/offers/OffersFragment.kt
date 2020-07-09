@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.offers_fragment.*
@@ -16,6 +17,7 @@ import org.jtom.ader_mobile.ui.offers.model.OffersModel
 import org.jtom.ader_mobile.ui.offers.model.OffersViewModelAction
 import org.jtom.ader_mobile.ui.offers.viewmodel.OffersViewModel
 import org.jtom.ader_mobile.ui.offers.viewmodel.OffersViewModelFactory
+import org.jtom.ader_mobile.util.SessionManager
 
 class OffersFragment : Fragment() {
 
@@ -31,14 +33,30 @@ class OffersFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this, OffersViewModelFactory(requireActivity().applicationContext)).get(OffersViewModel::class.java)
+        viewModel = ViewModelProvider(this, OffersViewModelFactory(requireContext())).get(OffersViewModel::class.java)
         viewModel.model.observe(viewLifecycleOwner, Observer {
             dispatchUIUpdate(it)
         })
 
+        addNewOfferButton.setOnClickListener {
+            handleNewOfferButtonClick()
+        }
+
         setupRecyclerView()
 
         viewModel.send(OffersViewModelAction.FetchOffers)
+    }
+
+    private fun handleNewOfferButtonClick() {
+        if (SessionManager.getInstance(requireContext()).fetchAuthToken().isNullOrEmpty()) {
+            MaterialAlertDialogBuilder(requireActivity())
+                .setTitle("Error")
+                .setMessage("Please login first!")
+                .setNegativeButton("Ok", null)
+                .show()
+        } else {
+            findNavController().navigate(R.id.offers_fragment_to_create_offer_fragment)
+        }
     }
 
     private fun setupRecyclerView() {
